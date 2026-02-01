@@ -67,7 +67,7 @@ public class GameComponent extends JComponent {
 	for(int i=0;i<20;i++) {
 		for(int j=0;j<20;j++) {
 			if(walls[i][j]==1) {
-				g2.setColor(Color.GREEN);
+				g2.setColor(new Color(130,245,134));
 			}else {
 			   g2.setColor(Color.BLACK);	
 			}
