@@ -83,9 +83,6 @@ public class GameComponent extends JComponent {
 
 	
 	}
-	public void addComponent(Rectangle r) {
-	 
-	}
 	}
 	
 		
