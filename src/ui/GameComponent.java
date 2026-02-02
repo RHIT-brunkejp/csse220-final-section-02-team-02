@@ -15,14 +15,17 @@ import entities.Player;
 import model.GameModel;
 
 public class GameComponent extends JComponent {
-
-	
 	public static final int WIDTH = 600;
 	public static final int HEIGHT = 600;
 	private GameModel model;
 	private Timer timer;
+	
 	private Player p = new Player();
 	
+	private Enemy e1 = new Enemy(250, 230);
+	private Enemy e2 = new Enemy(30, 530);
+	
+	// USED A 2D MATRIX TO PORTRAY THE MAZE WITH EACH INDEX REPRESENTING A 30 x 30 PIXEL AREA
 	int[][] walls = {
 			{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,},
 			{0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0,},
@@ -49,33 +52,40 @@ public class GameComponent extends JComponent {
 	public GameComponent(GameModel model) {
 	this.model = model;
 	
+	
+	// TIMER TO UPDATE ENEMY POSITIONS ALONG WITH REPAINTING THE SPRITES
     timer = new Timer(20, e -> {
-  	  p.update(WIDTH, HEIGHT);
-  	  repaint();
+    	p.update(WIDTH, HEIGHT);
+    	e1.updateEnemy(walls, 30);
+    	e2.updateEnemy(walls, 30);
+    	repaint();
   	});
   	timer.start();
+  	
+  	
+  	// ACTION LISTENER FOR PLAYER MOVEMENT
   	setFocusable(true);
   	  addKeyListener(new KeyAdapter() {
   		  @Override
   		  public void keyPressed(KeyEvent e) {
   		    if (e.getKeyCode() == KeyEvent.VK_W) {
   		    	if(p.canMove(walls, 30, p.getX(), p.getY()-2)) {
-  		    	p.up();
+  		    		p.up();
   		    	}
   		    }
   		    if(e.getKeyCode() == KeyEvent.VK_S) {
   		    	if(p.canMove(walls, 30, p.getX(), p.getY()+2)) {
-  		    	p.down();
+  		    		p.down();
   		    	}
   		    }
   		    if(e.getKeyCode() == KeyEvent.VK_A) {
   		    	if(p.canMove(walls, 30, p.getX()-2, p.getY())) {
-  		    	p.left();
+  		    		p.left();
   		    	}
   		    }
   		    if(e.getKeyCode() == KeyEvent.VK_D) {
   		    	if(	p.canMove(walls, 30, p.getX()+2, p.getY())) {
-  		    	p.right();	
+  		    		p.right();	
   		    	}
   		    }
   		    repaint();
@@ -89,8 +99,6 @@ public class GameComponent extends JComponent {
 	protected void paintComponent(Graphics g) {
 	super.paintComponent(g);
 	Graphics2D g2 = (Graphics2D) g;
-	Enemy e1 =new Enemy(250,230);
-	Enemy e2 =new Enemy(30,530);
 
 	// Minimal placeholder to test  it’s running
 	g2.drawString("Final Project Starter: UI is running ✅", 20, 30);
