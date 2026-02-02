@@ -4,8 +4,11 @@ import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 
 import javax.swing.JComponent;
+import javax.swing.Timer;
 
 import entities.Enemy;
 import entities.Player;
@@ -14,12 +17,36 @@ import model.GameModel;
 public class GameComponent extends JComponent {
 
 	
-	
+	public static final int WIDTH = 600;
+	public static final int HEIGHT = 600;
 	private GameModel model;
-
-
+	private Timer timer;
+	private Player p = new Player();
 	public GameComponent(GameModel model) {
 	this.model = model;
+    timer = new Timer(50, e -> {
+  	  p.update(WIDTH, HEIGHT);
+  	  repaint();
+  	});
+  	timer.start();
+  	setFocusable(true);
+  	  addKeyListener(new KeyAdapter() {
+  		  @Override
+  		  public void keyPressed(KeyEvent e) {
+  		    if (e.getKeyCode() == KeyEvent.VK_W) {
+  		      p.up();
+  		    }
+  		    if(e.getKeyCode() == KeyEvent.VK_S) {
+  		    	p.down();
+  		    }
+  		    if(e.getKeyCode() == KeyEvent.VK_A) {
+  		    	p.left();
+  		    }
+  		    if(e.getKeyCode() == KeyEvent.VK_D) {
+  		    	p.right();	
+  		    }
+  		    repaint();
+  		  }});
 	}
 	
 	
@@ -31,7 +58,6 @@ public class GameComponent extends JComponent {
 	Graphics2D g2 = (Graphics2D) g;
 	Enemy e1 =new Enemy(250,230);
 	Enemy e2 =new Enemy(30,530);
-	Player p = new Player();
 
 	// Minimal placeholder to test  it’s running
 	g2.drawString("Final Project Starter: UI is running ✅", 20, 30);
@@ -83,6 +109,7 @@ public class GameComponent extends JComponent {
 
 	
 	}
+	
 	public void addComponent(Rectangle r) {
 	 
 	}
