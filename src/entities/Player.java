@@ -75,4 +75,22 @@ private static boolean triedLoad = false;
 	 public void down() {
 		 y += speed;
 	 }
+	 public int getX() {
+		 return x;
+	 }
+	 public int getY() {
+		 return y;
+	 }
+	 public boolean canMove(int[][] walls, int tileSize, int x2, int y2) {
+		int leftTile = x2 / tileSize;
+		int rightTile = (x2 + tileSize - 1) / tileSize;
+		int topTile = y2 / tileSize;
+		int bottomTile = (y2 + tileSize - 1) / tileSize;
+		if(walls[topTile][leftTile] == 0 || walls[topTile][rightTile] == 0 
+		|| walls[bottomTile][leftTile] == 0 || walls[bottomTile][rightTile] == 0) {
+			return false;
+		}
+		return true;
+	 }
+	 
 }
