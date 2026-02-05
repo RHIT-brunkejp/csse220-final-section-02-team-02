@@ -4,22 +4,106 @@ import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+import java.util.ArrayList;
 
 import javax.swing.JComponent;
+import javax.swing.Timer;
 
 import entities.Enemy;
+import entities.Gem;
 import entities.Player;
 import model.GameModel;
 
 public class GameComponent extends JComponent {
-
-	
-	
+	public static final int WIDTH = 600;
+	public static final int HEIGHT = 600;
+	public static final int TILESIZE = 30;
+	boolean firstload = true;
 	private GameModel model;
-
-
+	private Timer timer;
+	public ArrayList<Gem> gem = new ArrayList<Gem>();
+	private Player p = new Player();
+	
+	private Enemy e1 = new Enemy(250, 230);
+	private Enemy e2 = new Enemy(30, 530);
+	
+	// USED A 2D MATRIX TO PORTRAY THE MAZE WITH EACH INDEX REPRESENTING A 30 x 30 PIXEL AREA
+	int[][] walls = {
+			{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,},
+			{0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0,},
+			{0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0,},
+			{0,1,1,1,1,0,1,1,0,0,0,0,1,1,0,0,0,0,0,0,},
+			{0,1,1,1,1,0,1,1,1,2,1,0,1,1,1,1,1,1,1,0,},
+			{0,1,1,0,0,0,1,1,1,1,1,0,1,1,1,1,1,1,1,0,},
+			{0,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,1,1,0,},
+			{0,1,1,1,1,0,1,1,1,0,1,1,1,1,1,1,1,1,1,0,},
+			{0,0,0,1,1,0,1,1,1,0,1,1,1,1,1,1,1,1,1,0,},
+			{0,1,1,1,1,1,1,1,0,0,1,1,0,0,0,0,1,1,0,0,},
+			{0,1,1,1,1,1,1,1,0,0,0,0,0,1,1,0,1,1,0,0,},
+			{0,1,1,0,0,0,1,1,1,1,1,1,1,1,1,0,1,1,0,0,},
+			{0,1,1,1,1,0,1,1,1,1,1,1,1,1,2,0,1,1,0,0,},
+			{0,1,1,1,1,0,1,1,0,0,0,0,0,0,0,0,1,1,0,0,},
+			{0,0,0,1,1,0,1,1,0,1,1,1,1,1,1,1,1,1,0,0,},
+			{0,0,1,1,1,0,1,1,0,1,1,1,1,1,1,1,1,1,0,0,},
+			{0,0,1,1,0,0,1,1,0,1,1,0,0,0,0,1,1,0,0,0,},
+			{0,1,1,1,1,1,1,1,0,1,1,0,1,1,1,1,1,0,0,0,},
+			{0,1,1,1,1,1,1,1,0,1,1,0,1,1,1,1,1,0,0,0,},
+			{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,}
+			};
+	
 	public GameComponent(GameModel model) {
 	this.model = model;
+	
+	
+	// TIMER TO UPDATE ENEMY POSITIONS ALONG WITH REPAINTING THE SPRITES
+    timer = new Timer(20, e -> {
+    	p.update(WIDTH, HEIGHT);
+    	e1.updateEnemy(walls, TILESIZE);
+    	e2.updateEnemy(walls, TILESIZE);
+    	repaint();
+  	});
+  	timer.start();
+  	
+  	
+  	// ACTION LISTENER FOR PLAYER MOVEMENT
+  	setFocusable(true);
+  	  addKeyListener(new KeyAdapter() {
+  		  @Override
+  		  public void keyPressed(KeyEvent e) {
+  		    if (e.getKeyCode() == KeyEvent.VK_W) {
+  		    	if(p.canMove(walls, TILESIZE, p.getX(), p.getY()-2)) {
+  		    		p.up();
+  		    	}
+  		    }
+  		    if(e.getKeyCode() == KeyEvent.VK_S) {
+  		    	if(p.canMove(walls, TILESIZE, p.getX(), p.getY()+2)) {
+  		    		p.down();
+  		    	}
+  		    }
+  		    if(e.getKeyCode() == KeyEvent.VK_A) {
+  		    	if(p.canMove(walls, TILESIZE, p.getX()-2, p.getY())) {
+  		    		p.left();
+  		    	}
+  		    }
+  		    if(e.getKeyCode() == KeyEvent.VK_D) {
+  		    	if(	p.canMove(walls, TILESIZE, p.getX()+2, p.getY())) {
+  		    		p.right();	
+  		    	}
+  		    }
+  		  if(e.getKeyCode() == KeyEvent.VK_DOWN) {
+		    	for(int i = 0;i<gem.size();i++) {
+		    		System.out.println(gem.toString());
+		    		if(p.getX()/TILESIZE==gem.get(i).getxtile()&&p.getY()/TILESIZE==gem.get(i).getytile()) {
+		    			gem.remove(i);
+		    			System.out.println("REMOVED GEM");
+		    			break;
+		    		}
+		    	}
+		    }
+  		    repaint();
+  		  }});
 	}
 	
 	
@@ -29,9 +113,6 @@ public class GameComponent extends JComponent {
 	protected void paintComponent(Graphics g) {
 	super.paintComponent(g);
 	Graphics2D g2 = (Graphics2D) g;
-	Enemy e1 =new Enemy(250,230);
-	Enemy e2 =new Enemy(30,530);
-	Player p = new Player();
 
 	// Minimal placeholder to test  it’s running
 	g2.drawString("Final Project Starter: UI is running ✅", 20, 30);
@@ -42,34 +123,16 @@ public class GameComponent extends JComponent {
 
 
 	// TODO: draw based on model state
-	int[][] walls = {
-			{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,},
-			{0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0,},
-			{0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0,},
-			{0,1,1,1,1,0,1,1,0,0,0,0,1,1,0,0,0,0,0,0,},
-			{0,1,1,1,1,0,1,1,1,1,1,0,1,1,1,1,1,1,1,0,},
-			{0,1,1,0,0,0,1,1,1,1,1,0,1,1,1,1,1,1,1,0,},
-			{0,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,1,1,0,},
-			{0,1,1,1,1,0,1,1,1,0,1,1,1,1,1,1,1,1,1,0,},
-			{0,0,0,1,1,0,1,1,1,0,1,1,1,1,1,1,1,1,1,0,},
-			{0,1,1,1,1,1,1,1,0,0,1,1,0,0,0,0,1,1,0,0,},
-			{0,1,1,1,1,1,1,1,0,0,0,0,0,1,1,0,1,1,0,0,},
-			{0,1,1,0,0,0,1,1,1,1,1,1,1,1,1,0,1,1,0,0,},
-			{0,1,1,1,1,0,1,1,1,1,1,1,1,1,1,0,1,1,0,0,},
-			{0,1,1,1,1,0,1,1,0,0,0,0,0,0,0,0,1,1,0,0,},
-			{0,0,0,1,1,0,1,1,0,1,1,1,1,1,1,1,1,1,0,0,},
-			{0,0,1,1,1,0,1,1,0,1,1,1,1,1,1,1,1,1,0,0,},
-			{0,0,1,1,0,0,1,1,0,1,1,0,0,0,0,1,1,0,0,0,},
-			{0,1,1,1,1,1,1,1,0,1,1,0,1,1,1,1,1,0,0,0,},
-			{0,1,1,1,1,1,1,1,0,1,1,0,1,1,1,1,1,0,0,0,},
-			{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,}
-			};
+
 	for(int i=0;i<20;i++) {
 		for(int j=0;j<20;j++) {
 			if(walls[i][j]==1) {
 				g2.setColor(new Color(130,245,134));
-			}else {
+			}else if(walls[i][j]==0) {
 			   g2.setColor(Color.BLACK);	
+			}else if(walls[i][j]==2&&firstload) {
+				gem.add(new Gem(j,i));
+				g2.setColor(new Color(130,245,134));
 			}
 			f.x=j*30;
 			f.y=i*30;
@@ -77,15 +140,21 @@ public class GameComponent extends JComponent {
 			g2.fill(f);
 		}
 	}
+	firstload=false;
+	for(Gem z:gem) {
+		z.draw(g2);
+	}
 	e1.draw(g2);
 	e2.draw(g2);
 	p.draw(g2);
-
+	}
 	
+	
+	public void addComponent(Rectangle r) {
+	 
 	}
 	}
 	
 		
 	
-
 

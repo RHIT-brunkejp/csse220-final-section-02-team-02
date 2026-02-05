@@ -1,5 +1,35 @@
 package entities;
 
-public class Gem {
+import java.awt.Color;
+import java.awt.Graphics2D;
+import java.awt.Image;
 
+public class Gem {
+	private int xloc;
+	private int yloc;
+	final int TILESIZE=30;
+	int sidel = 10;
+	private Image sprite;
+	public Gem(int tilex, int tiley) {
+		xloc = tilex;
+		yloc=tiley;
+	}
+	public int getxtile() {
+		return xloc;
+	}
+	public int getytile() {
+		return yloc;
+	}
+	public void draw(Graphics2D g2) {
+
+
+		if (sprite != null ) {
+		// sprite replaces the circle
+		g2.drawImage(sprite, xloc*TILESIZE+10, yloc*TILESIZE+10, sidel, sidel, null);
+		} else {
+		// fallback if sprite failed to load
+		g2.setColor(Color.YELLOW);
+		g2.fillRect(xloc*TILESIZE+10, yloc*TILESIZE+10, sidel, sidel);
+		}
+	}
 }
