@@ -49,7 +49,7 @@ public class Player {
 			triedLoad = true;
 
 			try {
-			// tennis.png must be in the SAME package as Ball.java
+			
 			sprite = ImageIO.read(Enemy.class.getResource("player.png"));
 			} catch (IOException | IllegalArgumentException ex) {
 			sprite = null; 

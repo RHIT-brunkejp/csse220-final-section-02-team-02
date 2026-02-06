@@ -3,16 +3,22 @@ package entities;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Image;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
+
+import javax.imageio.ImageIO;
 
 public class Gem {
 	private int xloc;
 	private int yloc;
 	final int TILESIZE=30;
-	int sidel = 10;
-	private Image sprite;
+	int sidel = 20;
+	private static BufferedImage sprite = null;
+	private static boolean triedLoad = false;
 	public Gem(int tilex, int tiley) {
 		xloc = tilex;
 		yloc=tiley;
+		loadSpriteOnce();
 	}
 	public int getxtile() {
 		return xloc;
@@ -20,6 +26,18 @@ public class Gem {
 	public int getytile() {
 		return yloc;
 	}
+	
+	private static void loadSpriteOnce() {
+		if (triedLoad) return;
+		triedLoad = true;
+
+		try {
+		
+		sprite = ImageIO.read(Enemy.class.getResource("gem.png"));
+		} catch (IOException | IllegalArgumentException ex) {
+		sprite = null; 
+		}
+		}
 	public void draw(Graphics2D g2) {
 
 
