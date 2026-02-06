@@ -27,17 +27,7 @@ public class Gem {
 		return yloc;
 	}
 	//gem sprite
-	private static void loadSpriteOnce() {
-		if (triedLoad) return;
-		triedLoad = true;
-
-		try {
-		
-		sprite = ImageIO.read(Enemy.class.getResource("gem.png"));
-		} catch (IOException | IllegalArgumentException ex) {
-		sprite = null; 
-		}
-		}
+	
 	public void draw(Graphics2D g2) {
 
 
