@@ -26,7 +26,7 @@ public class Gem {
 	public int getytile() {
 		return yloc;
 	}
-	
+	//gem sprite
 	private static void loadSpriteOnce() {
 		if (triedLoad) return;
 		triedLoad = true;
