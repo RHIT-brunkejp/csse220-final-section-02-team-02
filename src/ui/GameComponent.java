@@ -94,8 +94,7 @@ public class GameComponent extends JComponent {
   		    }
   		  if(e.getKeyCode() == KeyEvent.VK_DOWN) {
 		    	for(int i = 0;i<gem.size();i++) {
-		    		System.out.println(gem.toString());
-		    		if(p.getX()/TILESIZE==gem.get(i).getxtile()&&p.getY()/TILESIZE==gem.get(i).getytile()) {
+		    		if((p.getX()+15)/TILESIZE==gem.get(i).getxtile()&&(p.getY()+17)/TILESIZE==gem.get(i).getytile()) {
 		    			gem.remove(i);
 		    			System.out.println("REMOVED GEM");
 		    			break;
