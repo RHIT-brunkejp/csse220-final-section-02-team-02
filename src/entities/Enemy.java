@@ -4,7 +4,7 @@ import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
-
+import java.awt.Rectangle;
 import javax.imageio.ImageIO;
 
 /** Enemy that moves automatically and cannot pass through walls. */
@@ -33,7 +33,8 @@ public class Enemy {
 	}
 
 	private static void loadSpriteOnce() {
-		if (triedLoad) return;
+		if (triedLoad)
+			return;
 		triedLoad = true;
 
 		try {
@@ -43,8 +44,13 @@ public class Enemy {
 		}
 	}
 
-	public int getX() { return x; }
-	public int getY() { return y; }
+	public int getX() {
+		return x;
+	}
+
+	public int getY() {
+		return y;
+	}
 
 	/** Same idea as Player.canMove, but uses enemy sprite size. */
 	public boolean canMove(int[][] walls, int tileSize, int x2, int y2) {
@@ -58,19 +64,16 @@ public class Enemy {
 			return false;
 		}
 
-		if (walls[topTile][leftTile] == 0 || walls[topTile][rightTile] == 0
-				|| walls[bottomTile][leftTile] == 0 || walls[bottomTile][rightTile] == 0) {
+		if (walls[topTile][leftTile] == 0 || walls[topTile][rightTile] == 0 || walls[bottomTile][leftTile] == 0
+				|| walls[bottomTile][rightTile] == 0) {
 			return false;
 		}
 		return true;
 	}
 
 	/**
-	 * Automatic movement:
-	 * - tries to keep going forward
-	 * - if blocked, turns right
-	 * - if still blocked, turns left
-	 * - if still blocked, turns around
+	 * Automatic movement: - tries to keep going forward - if blocked, turns right -
+	 * if still blocked, turns left - if still blocked, turns around
 	 */
 	public void updateEnemy(int[][] walls, int tileSize) {
 		int nx = x;
@@ -118,10 +121,13 @@ public class Enemy {
 	}
 
 	private int[] stepForDir(int d) {
-		if (d == 0) return new int[] {0, -1}; // up
-		if (d == 1) return new int[] {1, 0};  // right
-		if (d == 2) return new int[] {0, 1};  // down
-		return new int[] {-1, 0};             // left
+		if (d == 0)
+			return new int[] { 0, -1 }; // up
+		if (d == 1)
+			return new int[] { 1, 0 }; // right
+		if (d == 2)
+			return new int[] { 0, 1 }; // down
+		return new int[] { -1, 0 }; // left
 	}
 
 	public void draw(Graphics2D g2) {
@@ -131,5 +137,9 @@ public class Enemy {
 			g2.setColor(Color.RED);
 			g2.fillRect(x, y, enemyWidth, enemyHeight);
 		}
+	}
+
+	public Rectangle getBounds() {
+		return new Rectangle(x, y, enemyWidth, enemyHeight);
 	}
 }
