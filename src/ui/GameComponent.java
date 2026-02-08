@@ -1,6 +1,7 @@
 package ui;
 
 import java.awt.Color;
+import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
@@ -163,10 +164,13 @@ public class GameComponent extends JComponent {
 		e2.draw(g2);
 		p.draw(g2);
 		g2.setColor(Color.WHITE);
+		Font fon = new Font("Arial", Font.BOLD, 15);
+		g2.setFont(fon);
 		
 		//score and lives 
-		g2.drawString("Score: " + score, 20, 30);
-		g2.drawString("Lives: " + p.getHp(), 20, 50);
+		g2.drawString("Score: " + score , 10, 30);
+		g2.drawString("Lives: " + p.getHp(), 10, 50);
+		g2.drawString("W A S D to move,   ↓ to pick up gems", 180, 585);
 	}
 	
 
