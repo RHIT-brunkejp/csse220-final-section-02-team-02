@@ -9,6 +9,7 @@ import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 
 import javax.swing.JComponent;
+import javax.swing.JLabel;
 import javax.swing.Timer;
 
 import entities.Enemy;
@@ -28,7 +29,9 @@ public class GameComponent extends JComponent {
 
 	private Enemy e1 = new Enemy(250, 230);
 	private Enemy e2 = new Enemy(30, 530);
-
+	
+	
+	private int score = 0;
 	private int hitCooldown = 0; // counts down in timer ticks
 	private static final int HIT_DELAY = 25; // 25 ticks * 20ms = 500ms
 
@@ -112,6 +115,7 @@ public class GameComponent extends JComponent {
 						if ((p.getX() + 15) / TILESIZE == gem.get(i).getxtile()
 								&& (p.getY() + 17) / TILESIZE == gem.get(i).getytile()) {
 							gem.remove(i);
+							score +=10;
 							System.out.println("REMOVED GEM");
 							break;
 						}
@@ -120,6 +124,7 @@ public class GameComponent extends JComponent {
 				repaint();
 			}
 		});
+		
 	}
 
 	@Override
@@ -157,6 +162,12 @@ public class GameComponent extends JComponent {
 		e1.draw(g2);
 		e2.draw(g2);
 		p.draw(g2);
+		g2.setColor(Color.WHITE);
+		
+		//score and lives 
+		g2.drawString("Score: " + score, 20, 30);
+		g2.drawString("Lives: " + p.getHp(), 20, 50);
 	}
+	
 
 }
