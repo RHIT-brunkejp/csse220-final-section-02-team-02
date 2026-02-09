@@ -5,6 +5,8 @@ import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.util.ArrayList;
@@ -171,6 +173,36 @@ public class GameComponent extends JComponent {
 		g2.drawString("Score: " + score , 10, 30);
 		g2.drawString("Lives: " + p.getHp(), 10, 50);
 		g2.drawString("W A S D to move,   ↓ to pick up gems", 180, 585);
+		
+		//game over
+		
+		if(p.noHp()) {
+			g2.setColor(new Color(0,0,0));
+			Rectangle over = new Rectangle(0,0,600,600);
+			g2.fill(over);
+			g2.draw(over);
+			g2.setColor(new Color(255,255,255));
+			g2.drawString("GAME OVER",250,300);
+			g2.drawString("Score: "+score,250,320);
+			Timer restartTimer = new Timer(3000, new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					g2.clearRect(0, 0,600, 600);
+					repaint();
+					restart();
+				}
+			});
+			restartTimer.setRepeats(false);
+			restartTimer.start();
+			
+		}
+		
+	}
+	private void restart() {
+		score = 0;
+		p.setHp(3);
+		p.setPosition(290, 530);
+		
 	}
 	
 

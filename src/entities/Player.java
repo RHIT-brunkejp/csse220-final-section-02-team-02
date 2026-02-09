@@ -114,7 +114,16 @@ public class Player {
 		if (hp > 0)
 			hp--;
 	}
-
+	public boolean noHp() {
+		return hp == 0;
+	}
+	public void setHp(int hp) {
+		this.hp = hp;
+	}
+	public void setPosition(int x, int y) {
+		this.x = x;
+		this.y = y;
+	}
 	// Get Rectangle Area Coordinates
 	public Rectangle getBounds() {
 		return new Rectangle(x, y, playerWidth, playerHeight);
