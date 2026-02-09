@@ -10,6 +10,9 @@ import ui.GameWindow;
  * <br>Purpose: Top level class for CSSE220 Project containing main method 
  * Entry point for the final project.
  */
+
+// Milestone 2 Commit Comment
+
 public class MainApp {
 	
 	public static void main(String[] args) {
