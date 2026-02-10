@@ -13,6 +13,7 @@ import java.util.ArrayList;
 
 import javax.swing.JComponent;
 import javax.swing.JLabel;
+import javax.swing.JPanel;
 import javax.swing.Timer;
 
 import entities.Enemy;
@@ -20,21 +21,20 @@ import entities.Gem;
 import entities.Player;
 import model.GameModel;
 
-public class GameComponent extends JComponent {
+public class GameComponent extends JPanel {
 	public static final int WIDTH = 600;
 	public static final int HEIGHT = 600;
 	public static final int TILESIZE = 30;
 	boolean firstload = true;
-	private GameModel model;
 	private Timer timer;
 	public ArrayList<Gem> gem = new ArrayList<Gem>();
-	private Player p = new Player();
-
-	private Enemy e1 = new Enemy(250, 230);
-	private Enemy e2 = new Enemy(30, 530);
+	public ArrayList<Enemy> enemies = new ArrayList<Enemy>();
+	public Player p = new Player();
+	Timer restartTimer;
+	boolean gameOver= false;
 	
 	
-	private int score = 0;
+	public int score = 0;
 	private int hitCooldown = 0; // counts down in timer ticks
 	private static final int HIT_DELAY = 25; // 25 ticks * 20ms = 500ms
 
@@ -48,28 +48,28 @@ public class GameComponent extends JComponent {
 			{ 0, 1, 1, 1, 1, 0, 1, 1, 1, 2, 1, 0, 1, 1, 1, 1, 1, 1, 1, 0, },
 			{ 0, 1, 1, 0, 0, 0, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 0, },
 			{ 0, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, },
-			{ 0, 1, 1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, },
+			{ 0, 1, 1, 1, 1, 0, 4, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, },
 			{ 0, 0, 0, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, },
 			{ 0, 1, 1, 1, 1, 1, 1, 1, 0, 0, 1, 1, 0, 0, 0, 0, 1, 1, 0, 0, },
-			{ 0, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 1, 1, 0, 1, 1, 0, 0, },
+			{ 0, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 5, 1, 0, 1, 1, 0, 0, },
 			{ 0, 1, 1, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 0, 0, },
-			{ 0, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 2, 0, 1, 1, 0, 0, },
+			{ 0, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 0, 0, },
 			{ 0, 1, 1, 1, 1, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, },
-			{ 0, 0, 0, 1, 1, 0, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, },
+			{ 0, 0, 0, 1, 1, 0, 1, 1, 0, 1, 1, 1, 1, 4, 1, 1, 1, 1, 0, 0, },
 			{ 0, 0, 1, 1, 1, 0, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, },
 			{ 0, 0, 1, 1, 0, 0, 1, 1, 0, 1, 1, 0, 0, 0, 0, 1, 1, 0, 0, 0, },
-			{ 0, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 0, 1, 1, 1, 1, 1, 0, 0, 0, },
-			{ 0, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 0, 1, 1, 1, 1, 1, 0, 0, 0, },
+			{ 0, 4, 1, 1, 1, 1, 1, 1, 0, 1, 1, 0, 1, 1, 1, 1, 1, 0, 0, 0, },
+			{ 0, 1, 1, 1, 1, 1, 1, 2, 0, 3, 2, 0, 1, 1, 1, 1, 1, 0, 0, 0, },
 			{ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, } };
-
-	public GameComponent(GameModel model) {
-		this.model = model;
+//0=wall, 1=path, 2=gem, 3=player,4=enemy,5=door
+	public GameComponent() {
 
 		// TIMER TO UPDATE ENEMY POSITIONS ALONG WITH REPAINTING THE SPRITES
 		timer = new Timer(20, e -> {
 			p.update(WIDTH, HEIGHT);
-			e1.updateEnemy(walls, TILESIZE);
-			e2.updateEnemy(walls, TILESIZE);
+			for(Enemy i:enemies) {
+				i.updateEnemy(walls, TILESIZE);
+			}
 
 			// cooldown countdown
 			if (hitCooldown > 0)
@@ -77,10 +77,13 @@ public class GameComponent extends JComponent {
 
 			// collision check (only if not in cooldown)
 			if (hitCooldown == 0) {
-				if (p.getBounds().intersects(e1.getBounds()) || p.getBounds().intersects(e2.getBounds())) {
+				for(Enemy z:enemies) {
+				if (p.getBounds().intersects(z.getBounds())) {
 					p.loseLife();
 					hitCooldown = HIT_DELAY;
 					System.out.println("Player hit! HP now: " + p.getHp());
+					break;
+				}
 				}
 			}
 
@@ -136,34 +139,14 @@ public class GameComponent extends JComponent {
 		Graphics2D g2 = (Graphics2D) g;
 
 		// Minimal placeholder to test it’s running
-		g2.drawString("Final Project Starter: UI is running ✅", 20, 30);
-		g2.draw(new Rectangle(30, 30));
-		Rectangle f = new Rectangle(30, 30);
-
-		// TODO: draw based on model state
-
-		for (int i = 0; i < 20; i++) {
-			for (int j = 0; j < 20; j++) {
-				if (walls[i][j] == 1) {
-					g2.setColor(new Color(130, 245, 134));
-				} else if (walls[i][j] == 0) {
-					g2.setColor(Color.BLACK);
-				} else if (walls[i][j] == 2 && firstload) {
-					gem.add(new Gem(j, i));
-					g2.setColor(new Color(130, 245, 134));
-				}
-				f.x = j * 30;
-				f.y = i * 30;
-				g2.draw(f);
-				g2.fill(f);
-			}
-		}
+		loadLevel(walls,g2);
 		firstload = false;
 		for (Gem z : gem) {
 			z.draw(g2);
 		}
-		e1.draw(g2);
-		e2.draw(g2);
+		for(Enemy z:enemies) {
+			z.draw(g2);
+		}
 		p.draw(g2);
 		g2.setColor(Color.WHITE);
 		Font fon = new Font("Arial", Font.BOLD, 15);
@@ -176,32 +159,47 @@ public class GameComponent extends JComponent {
 		
 		//game over
 		
-		if(p.noHp()) {
-			g2.setColor(new Color(0,0,0));
-			Rectangle over = new Rectangle(0,0,600,600);
-			g2.fill(over);
-			g2.draw(over);
-			g2.setColor(new Color(255,255,255));
-			g2.drawString("GAME OVER",250,300);
-			g2.drawString("Score: "+score,250,320);
-			Timer restartTimer = new Timer(3000, new ActionListener() {
-				@Override
-				public void actionPerformed(ActionEvent e) {
-					g2.clearRect(0, 0,600, 600);
-					repaint();
-					restart();
-				}
-			});
-			restartTimer.setRepeats(false);
-			restartTimer.start();
+			
+
 			
 		}
 		
+	
+	private void loadLevel(int[][] walls, Graphics2D g2) {
+		Rectangle f = new Rectangle(30, 30);
+        Color path = new Color(130, 245, 134);
+		// TODO: draw based on model state
+		for (int i = 0; i < 20; i++) {
+			for (int j = 0; j < 20; j++) {
+				if (walls[i][j] == 1) {
+					g2.setColor(path);
+				} else if (walls[i][j] == 0) {
+					g2.setColor(Color.BLACK);
+				} else if (walls[i][j] == 2 && firstload) {
+					gem.add(new Gem(j, i));
+				}else if (walls[i][j] == 3 && firstload) {
+					p.setPosition(j*30, i*30);
+				}else if (walls[i][j] == 4 && firstload) {
+					enemies.add(new Enemy(j*30,i*30));
+				}else if (walls[i][j] == 5) {
+					g2.setColor(new Color(150,75,0));
+				}
+				f.x = j * 30;
+				f.y = i * 30;
+				g2.draw(f);
+				g2.fill(f);
+				g2.setColor(path);
+			}
+		}
+		
 	}
-	private void restart() {
+	public void restart() {
 		score = 0;
 		p.setHp(3);
-		p.setPosition(290, 530);
+		enemies.clear();
+		gem.clear();
+		firstload=true;
+        repaint();
 		
 	}
 	
