@@ -6,6 +6,8 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.awt.Rectangle;
 import javax.imageio.ImageIO;
+import java.awt.Point;
+import java.util.ArrayList;
 
 /** Enemy that moves automatically and cannot pass through walls. */
 public class Enemy {
@@ -17,6 +19,11 @@ public class Enemy {
 	private int hp;
 
 	private int speed = 2;
+
+	private ArrayList<Point> path = new ArrayList<>(); // pixel waypoints
+	private int pathIndex = 0;
+	private int pathDir = 1; // +1 forward, -1 backward
+	private int arriveDist = 2;
 
 	// match your draw size so collision is accurate
 	private int enemyWidth = 20;
@@ -76,48 +83,75 @@ public class Enemy {
 	 * if still blocked, turns left - if still blocked, turns around
 	 */
 	public void updateEnemy(int[][] walls, int tileSize) {
-		int nx = x;
-		int ny = y;
+		if (path.isEmpty())
+			return;
 
-		// try forward
-		int[] step = stepForDir(dir);
-		nx = x + step[0] * speed;
-		ny = y + step[1] * speed;
+		Point target = path.get(pathIndex);
+		int tx = target.x;
+		int ty = target.y;
 
-		if (canMove(walls, tileSize, nx, ny)) {
-			x = nx;
-			y = ny;
+		int dx = tx - x;
+		int dy = ty - y;
+
+		// arrived at this waypoint -> advance index (and reverse at ends)
+		if (Math.abs(dx) <= arriveDist && Math.abs(dy) <= arriveDist) {
+			pathIndex += pathDir;
+
+			if (pathIndex >= path.size()) {
+				pathIndex = path.size() - 1;
+				pathDir = -1;
+				pathIndex += pathDir;
+			} else if (pathIndex < 0) {
+				pathIndex = 0;
+				pathDir = 1;
+				pathIndex += pathDir;
+			}
 			return;
 		}
 
-		// try right
-		int right = (dir + 1) % 4;
-		step = stepForDir(right);
-		nx = x + step[0] * speed;
-		ny = y + step[1] * speed;
+		int stepX = 0;
+		int stepY = 0;
+		if (dx > 0)
+			stepX = speed;
+		else if (dx < 0)
+			stepX = -speed;
+		if (dy > 0)
+			stepY = speed;
+		else if (dy < 0)
+			stepY = -speed;
 
-		if (canMove(walls, tileSize, nx, ny)) {
-			dir = right;
-			x = nx;
-			y = ny;
-			return;
+		// Move: try dominant axis first so it follows corridors cleanly
+		boolean moved = false;
+		if (Math.abs(dx) >= Math.abs(dy)) {
+			if (stepX != 0 && canMove(walls, tileSize, x + stepX, y)) {
+				x += stepX;
+				moved = true;
+			} else if (stepY != 0 && canMove(walls, tileSize, x, y + stepY)) {
+				y += stepY;
+				moved = true;
+			}
+		} else {
+			if (stepY != 0 && canMove(walls, tileSize, x, y + stepY)) {
+				y += stepY;
+				moved = true;
+			} else if (stepX != 0 && canMove(walls, tileSize, x + stepX, y)) {
+				x += stepX;
+				moved = true;
+			}
 		}
 
-		// try left
-		int left = (dir + 3) % 4;
-		step = stepForDir(left);
-		nx = x + step[0] * speed;
-		ny = y + step[1] * speed;
-
-		if (canMove(walls, tileSize, nx, ny)) {
-			dir = left;
-			x = nx;
-			y = ny;
-			return;
+		// If blocked (tight corner), just skip to next waypoint in the same direction
+		if (!moved) {
+			pathIndex += pathDir;
+			if (pathIndex >= path.size()) {
+				pathIndex = path.size() - 1;
+				pathDir = -1;
+			}
+			if (pathIndex < 0) {
+				pathIndex = 0;
+				pathDir = 1;
+			}
 		}
-
-		// try back
-		dir = (dir + 2) % 4;
 	}
 
 	private int[] stepForDir(int d) {
@@ -141,5 +175,16 @@ public class Enemy {
 
 	public Rectangle getBounds() {
 		return new Rectangle(x, y, enemyWidth, enemyHeight);
+	}
+
+	public void setPacePathTiles(int tileSize, int[] cols, int[] rows) {
+		path.clear();
+		for (int i = 0; i < cols.length && i < rows.length; i++) {
+			int px = cols[i] * tileSize + (tileSize - enemyWidth) / 2;
+			int py = rows[i] * tileSize + (tileSize - enemyHeight) / 2;
+			path.add(new Point(px, py));
+		}
+		pathIndex = 0;
+		pathDir = 1;
 	}
 }
