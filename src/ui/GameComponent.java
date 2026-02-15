@@ -206,8 +206,8 @@ public class GameComponent extends JPanel {
 		g2.setFont(fon);
 
 		// score and lives
-		g2.drawString("Score: " + score, 10, 30);
-		g2.drawString("Lives: " + p.getHp(), 10, 50);
+		g2.drawString("Score: " + score, 10, 22);
+		g2.drawString("Lives: " + p.getHp(), 100, 22);
 		g2.drawString("W A S D to move,   ↓ to pick up gems", 180, 585);
 
 		// game over

@@ -19,5 +19,9 @@ public class GameOverPanel extends JPanel{
 	 }
 	 public void scoredisplay(int score) {
 		 this.label.setText("<html>Game OVER! Score: " + score);
+		 
+		 
+
+	 
 	 }
 }
