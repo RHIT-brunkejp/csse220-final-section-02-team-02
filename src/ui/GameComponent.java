@@ -4,6 +4,7 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.Image;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -26,6 +27,7 @@ public class GameComponent extends JComponent {
 	public static final int TILESIZE = 30;
 	boolean firstload = true;
 	private GameModel model;
+	private Image im;
 	private Timer timer;
 	public ArrayList<Gem> gem = new ArrayList<Gem>();
 	private Player p = new Player();
