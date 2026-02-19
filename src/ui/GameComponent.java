@@ -40,6 +40,8 @@ public class GameComponent extends JPanel {
 //=======
 //>>>>>>> branch 'main' of https://github.com/RHIT-brunkejp/csse220-final-section-02-team-02.git
 	private Timer timer;
+	private Timer movement;
+	int flag =0;
 	public ArrayList<Gem> gem = new ArrayList<Gem>();
 	public ArrayList<Enemy> enemies = new ArrayList<Enemy>();
 	public Player p = new Player();
@@ -114,6 +116,34 @@ public class GameComponent extends JPanel {
 
 
 		// TIMER TO UPDATE ENEMY POSITIONS ALONG WITH REPAINTING THE SPRITES
+		movement = new Timer(20,e ->{
+			if (flag==1) {
+				if (p.canMove(walls, TILESIZE, p.getX(), p.getY() - 2)) {
+					p.up();
+					checkWin();
+				}
+			}
+			if (flag==2) {
+				if (p.canMove(walls, TILESIZE, p.getX(), p.getY() + 2)) {
+					p.down();
+					checkWin();
+				}
+			}
+			if (flag == 3) {
+				if (p.canMove(walls, TILESIZE, p.getX() - 2, p.getY())) {
+					p.left();
+					checkWin();
+				}
+			}
+			if (flag == 4) {
+				if (p.canMove(walls, TILESIZE, p.getX() + 2, p.getY())) {
+					p.right();
+					checkWin();
+				}
+			
+			
+			
+		}});
 		timer = new Timer(20, e -> {
 			p.update(WIDTH, HEIGHT);
 			for (Enemy i : enemies) {
@@ -139,35 +169,38 @@ public class GameComponent extends JPanel {
 			repaint();
 		});
 		timer.start();
+		movement.start();
 
 		// ACTION LISTENER FOR PLAYER MOVEMENT
 		setFocusable(true);
 		addKeyListener(new KeyAdapter() {
+			public void keyReleased(KeyEvent e) {
+				if (e.getKeyCode() == KeyEvent.VK_W && flag==1) {
+					flag=0;
+				}
+				if (e.getKeyCode() == KeyEvent.VK_S&& flag==2) {
+					flag = 0;
+				}
+				if (e.getKeyCode() == KeyEvent.VK_A&& flag==3) {
+					flag=0;
+				}
+				if (e.getKeyCode() == KeyEvent.VK_D&& flag==4) {
+					flag=0;
+				}
+			}
 			@Override
 			public void keyPressed(KeyEvent e) {
 				if (e.getKeyCode() == KeyEvent.VK_W) {
-					if (p.canMove(walls, TILESIZE, p.getX(), p.getY() - 2)) {
-						p.up();
-						checkWin();
-					}
+					flag=1;
 				}
 				if (e.getKeyCode() == KeyEvent.VK_S) {
-					if (p.canMove(walls, TILESIZE, p.getX(), p.getY() + 2)) {
-						p.down();
-						checkWin();
-					}
+					flag = 2;
 				}
 				if (e.getKeyCode() == KeyEvent.VK_A) {
-					if (p.canMove(walls, TILESIZE, p.getX() - 2, p.getY())) {
-						p.left();
-						checkWin();
-					}
+					flag=3;
 				}
 				if (e.getKeyCode() == KeyEvent.VK_D) {
-					if (p.canMove(walls, TILESIZE, p.getX() + 2, p.getY())) {
-						p.right();
-						checkWin();
-					}
+					flag=4;
 				}
 				if (e.getKeyCode() == KeyEvent.VK_DOWN) {
 					for (int i = 0; i < gem.size(); i++) {
@@ -296,8 +329,9 @@ public class GameComponent extends JPanel {
 	}
 
 	public void restart() {
-
+        if(p.getHp()==0) {
 		score = 0;
+        }
 		p.setHp(3);
 		enemies.clear();
 		gem.clear();
@@ -307,7 +341,7 @@ public class GameComponent extends JPanel {
 	}
 
 	public void checkWin() {
-		if (gem.size() == 0 && walls[p.getY() / 30][p.getX() / 30] == 5) {
+		if (gem.size() == 0 && walls[(p.getY()+10)/ 30][(p.getX()+10) / 30] == 5) {
 			walls = level2;
 			restart();
 		}
