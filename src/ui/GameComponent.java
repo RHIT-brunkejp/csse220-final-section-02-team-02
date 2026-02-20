@@ -33,6 +33,7 @@ public class GameComponent extends JPanel {
 	boolean firstload = true;
 	private BufferedImage wallimage;
 	private BufferedImage doorimage;
+	private BufferedImage grassimage;
 
 	private GameModel model;
 	private Image im;
@@ -98,6 +99,12 @@ public class GameComponent extends JPanel {
 
 		try {
 			wallimage = ImageIO.read(getClass().getResource("/ui/wall.png"));
+		} catch (IOException e) {
+			System.out.println("Could not load wall image.");
+			e.printStackTrace();
+		}
+		try {
+			grassimage = ImageIO.read(getClass().getResource("/ui/grass.png"));
 		} catch (IOException e) {
 			System.out.println("Could not load wall image.");
 			e.printStackTrace();
@@ -258,14 +265,22 @@ public class GameComponent extends JPanel {
 
 					}
 				} else if (walls[i][j] == 1) {
+					if(grassimage!=null) {
+						g2.drawImage(grassimage, f.x, f.y, TILESIZE, TILESIZE, null);
+					}else {
 					g2.setColor(path);
 //					
 					g2.fill(f);
+					}
 
 				} else if (walls[i][j] == 2) {
+					if(grassimage!=null) {
+						g2.drawImage(grassimage, f.x, f.y, TILESIZE, TILESIZE, null);
+					}else {
 					g2.setColor(path);
-
+//					
 					g2.fill(f);
+					}
 					if (firstload) {
 						gem.add(new Gem(j, i));
 					}
@@ -273,9 +288,13 @@ public class GameComponent extends JPanel {
 				}
 
 				else if (walls[i][j] == 3) {
+					if(grassimage!=null) {
+						g2.drawImage(grassimage, f.x, f.y, TILESIZE, TILESIZE, null);
+					}else {
 					g2.setColor(path);
-
+//					
 					g2.fill(f);
+					}
 					if (firstload) {
 						p.setPosition(j * 30, i * 30);
 					}
@@ -283,9 +302,13 @@ public class GameComponent extends JPanel {
 				}
 
 				else if (walls[i][j] == 4) {
+					if(grassimage!=null) {
+						g2.drawImage(grassimage, f.x, f.y, TILESIZE, TILESIZE, null);
+					}else {
 					g2.setColor(path);
-
+//					
 					g2.fill(f);
+					}
 
 					if (firstload) {
 						Enemy z = new Enemy(j * TILESIZE, i * TILESIZE);
