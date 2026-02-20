@@ -41,6 +41,9 @@ public class MainApp {
 			if (game.p.getHp() == 0) {
 				this.setToOver();
 			}
+			if (game.gem.size() == 0 && game.walls[(game.p.getY() + 10) / 30][(game.p.getX() + 10) / 30] == 5) {
+				this.setToWin();
+			}
 		});
 		timer.start();
 	}
