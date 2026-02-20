@@ -2,6 +2,7 @@ package app;
 
 import java.awt.CardLayout;
 
+
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
@@ -10,11 +11,13 @@ import javax.swing.Timer;
 import app.MainApp;
 import ui.GameComponent;
 import ui.GameOverPanel;
+import ui.WinScreen;
 
 public class MainApp {
 	private JFrame frame;
 	GameOverPanel gameOver = new GameOverPanel();
-	GameComponent game = new GameComponent();
+	GameComponent game = new GameComponent(this);
+	WinScreen winScreen = new WinScreen();
 	JPanel cards = new JPanel(new CardLayout());
 
 	public MainApp() {
@@ -23,6 +26,7 @@ public class MainApp {
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		cards.add(game, "GAME");
 		cards.add(gameOver, "GAME OVER");
+		cards.add(winScreen, "WIN");
 
 		frame.setContentPane(cards);
 		CardLayout cl = (CardLayout) cards.getLayout();
@@ -56,5 +60,12 @@ public class MainApp {
 		gameOver.scoredisplay(game.score);
 		cl.show(cards, "GAME OVER");
 	}
+	
+	public void setToWin() {
+	    CardLayout cl = (CardLayout) cards.getLayout();
+	    winScreen.scoredisplay(game.score);
+	    cl.show(cards, "WIN");
+	}
+
 
 }

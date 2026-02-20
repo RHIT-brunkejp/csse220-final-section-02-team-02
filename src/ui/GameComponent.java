@@ -21,6 +21,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.Timer;
 
+import app.MainApp;
 import entities.Enemy;
 import entities.Gem;
 import entities.Player;
@@ -33,7 +34,8 @@ public class GameComponent extends JPanel {
 	boolean firstload = true;
 	private BufferedImage wallimage;
 	private BufferedImage doorimage;
-	
+	private MainApp app;
+	private int currentLevel =1;
 //<<<<<<< HEAD
 	private GameModel model;
 	private Image im;
@@ -51,7 +53,8 @@ public class GameComponent extends JPanel {
 
 	// USED A 2D MATRIX TO PORTRAY THE MAZE WITH EACH INDEX REPRESENTING A 30 x 30
 	// PIXEL AREA
-	int[][] walls = { { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, },
+	private int[][] currentMap;
+	int[][] level1 = { { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, },
 			{ 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, },
 			{ 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, },
 			{ 0, 1, 1, 1, 1, 0, 1, 1, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, },
@@ -74,27 +77,29 @@ public class GameComponent extends JPanel {
 //0=wall, 1=path, 2=gem, 3=player,4=enemy,5=door
 	int[][] level2 = { { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, },
 			{ 0, 1, 1, 1, 1, 1, 0, 1, 1, 0, 4, 1, 0, 1, 1, 0, 1, 1, 1, 0, },
-			{ 0, 1, 0, 1, 0, 1, 0, 0, 1, 0, 2, 1, 0, 0, 1, 1, 1, 0, 1, 0, },
-			{ 0, 0, 0, 1, 0, 1, 1, 1, 1, 0, 1, 0, 0, 1, 1, 0, 2, 0, 1, 0, },
+			{ 0, 1, 0, 1, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 1, 1, 0, 1, 0, },
+			{ 0, 0, 0, 1, 0, 1, 1, 1, 1, 0, 1, 0, 0, 1, 1, 0, 1, 0, 1, 0, },
 			{ 0, 1, 1, 1, 1, 1, 1, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 1, 0, },
 			{ 0, 1, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 0, 4, 1, 1, 0, 1, 1, 0, },
-			{ 0, 1, 1, 0, 2, 1, 1, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, },
+			{ 0, 1, 1, 0, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, },
 			{ 0, 0, 1, 0, 1, 0, 1, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, },
 			{ 0, 1, 1, 0, 1, 1, 1, 0, 1, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, },
 			{ 0, 1, 0, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 1, 1, 1, 1, 1, 4, 0, },
 			{ 0, 1, 1, 1, 1, 1, 1, 0, 1, 1, 0, 1, 0, 1, 0, 1, 1, 1, 1, 0, },
 			{ 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 1, 0, 1, 0, 1, 1, 1, 0, 0, },
 			{ 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 0, 1, 0, 0, 0, 1, 0, 0, },
-			{ 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 2, 0, 1, 1, 0, },
+			{ 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 1, 0, 1, 1, 0, },
 			{ 0, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 0, 1, 0, 0, 1, 0, },
-			{ 0, 2, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 1, 0, 1, 1, 0, },
+			{ 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 1, 0, 1, 1, 0, },
 			{ 0, 1, 1, 1, 0, 4, 1, 1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 0, 0, },
 			{ 0, 1, 0, 1, 0, 1, 0, 0, 0, 1, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, },
-			{ 0, 1, 0, 1, 0, 5, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 3, 0, },
+			{ 0, 1, 0, 1, 0, 5, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 2, 3, 0, },
 			{ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, } };
 
 //0=wall, 1=path, 2=gem, 3=player,4=enemy,5=door
-	public GameComponent() {
+	public GameComponent(MainApp app) {
+		this.app = app;
+		currentMap = level1;
 		
 		
 		try {
@@ -117,7 +122,7 @@ public class GameComponent extends JPanel {
 		timer = new Timer(20, e -> {
 			p.update(WIDTH, HEIGHT);
 			for (Enemy i : enemies) {
-				i.updateEnemy(walls, TILESIZE);
+				i.updateEnemy(currentMap, TILESIZE);
 			}
 
 			// cooldown countdown
@@ -146,25 +151,25 @@ public class GameComponent extends JPanel {
 			@Override
 			public void keyPressed(KeyEvent e) {
 				if (e.getKeyCode() == KeyEvent.VK_W) {
-					if (p.canMove(walls, TILESIZE, p.getX(), p.getY() - 2)) {
+					if (p.canMove(currentMap, TILESIZE, p.getX(), p.getY() - 2)) {
 						p.up();
 						checkWin();
 					}
 				}
 				if (e.getKeyCode() == KeyEvent.VK_S) {
-					if (p.canMove(walls, TILESIZE, p.getX(), p.getY() + 2)) {
+					if (p.canMove(currentMap, TILESIZE, p.getX(), p.getY() + 2)) {
 						p.down();
 						checkWin();
 					}
 				}
 				if (e.getKeyCode() == KeyEvent.VK_A) {
-					if (p.canMove(walls, TILESIZE, p.getX() - 2, p.getY())) {
+					if (p.canMove(currentMap, TILESIZE, p.getX() - 2, p.getY())) {
 						p.left();
 						checkWin();
 					}
 				}
 				if (e.getKeyCode() == KeyEvent.VK_D) {
-					if (p.canMove(walls, TILESIZE, p.getX() + 2, p.getY())) {
+					if (p.canMove(currentMap, TILESIZE, p.getX() + 2, p.getY())) {
 						p.right();
 						checkWin();
 					}
@@ -192,7 +197,7 @@ public class GameComponent extends JPanel {
 		Graphics2D g2 = (Graphics2D) g;
 
 		// Minimal placeholder to test it’s running
-		loadLevel(walls, g2);
+		loadLevel(currentMap, g2);
 		firstload = false;
 		for (Gem z : gem) {
 			z.draw(g2);
@@ -214,7 +219,7 @@ public class GameComponent extends JPanel {
 
 	}
 
-	private void loadLevel(int[][] walls, Graphics2D g2) {
+	private void loadLevel(int[][] currentMap, Graphics2D g2) {
 		Rectangle f = new Rectangle(30, 30);
 		Color path = new Color(130, 245, 134);
 		// TODO: draw based on model state
@@ -224,19 +229,19 @@ public class GameComponent extends JPanel {
 				f.x=j*TILESIZE;
 				f.y=i*TILESIZE;
 				
-				if(walls[i][j]==0) {
+				if(currentMap[i][j]==0) {
 					if (wallimage != null) {
 						g2.drawImage(wallimage, f.x, f.y, TILESIZE, TILESIZE, null);
 						
 					}
 				}
-				else if (walls[i][j] ==1) {
+				else if (currentMap[i][j] ==1) {
 					g2.setColor(path);
 //					
 					g2.fill(f);
 					
 				}
-				else if(walls[i][j] ==2 ) {
+				else if(currentMap[i][j] ==2 ) {
 					g2.setColor(path);
 					
 					g2.fill(f);
@@ -247,7 +252,7 @@ public class GameComponent extends JPanel {
 					
 				}
 				
-				else if (walls[i][j] == 3) {
+				else if (currentMap[i][j] == 3) {
 					g2.setColor(path);
 					
 					g2.fill(f);
@@ -257,7 +262,7 @@ public class GameComponent extends JPanel {
 					
 				}	
 				
-				else if (walls[i][j] == 4 ) {
+				else if (currentMap[i][j] == 4 ) {
 					g2.setColor(path);
 					
 					g2.fill(f);
@@ -267,7 +272,7 @@ public class GameComponent extends JPanel {
 
 					int id = enemies.size(); // 0,1,2,... as they spawn
 
-					if (walls == this.walls) { // level 1 active
+					if (currentMap == this.currentMap) { // level 1 active
 						assignLevel1Route(z, id);
 					} else { // level 2 active
 						assignLevel2Route(z, id);
@@ -276,7 +281,7 @@ public class GameComponent extends JPanel {
 					enemies.add(z);
 					}
 					
-				} else if (walls[i][j] == 5) {
+				} else if (currentMap[i][j] == 5) {
 					
 					if (doorimage != null) {
 						g2.drawImage(doorimage, f.x, f.y, TILESIZE, TILESIZE, null);
@@ -295,21 +300,44 @@ public class GameComponent extends JPanel {
 
 	}
 
+//	public void restart() {
+//
+//		score = 0;
+//		p.setHp(3);
+//		enemies.clear();
+//		gem.clear();
+//		firstload = true;
+//		repaint();
+//
+//	}
 	public void restart() {
 
-		score = 0;
+		//score = 0;
 		p.setHp(3);
-		enemies.clear();
-		gem.clear();
-		firstload = true;
-		repaint();
+	    enemies.clear();
+	    gem.clear();
+	    firstload = true;
 
+	    if (currentLevel == 1) {
+	        currentMap = level1;   // original level 1 map
+	    } else {
+	        currentMap = level2;
+	    }
+
+	    repaint();
 	}
 
+
 	public void checkWin() {
-		if (gem.size() == 0 && walls[p.getY() / 30][p.getX() / 30] == 5) {
-			walls = level2;
+		if (gem.size() == 0 && currentLevel ==1 && currentMap[p.getY() / 30][p.getX() / 30] == 5) {
+			
+			currentLevel = 2;
+			currentMap = level2;
 			restart();
+		}
+		else if (gem.size()==0 && currentLevel==2 && currentMap[p.getY()/30][p.getX()/30]==5){
+		timer.stop();
+		app.setToWin();
 		}
 	}
 
