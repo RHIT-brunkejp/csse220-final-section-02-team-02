@@ -42,6 +42,8 @@ public class GameComponent extends JPanel {
 //=======
 //>>>>>>> branch 'main' of https://github.com/RHIT-brunkejp/csse220-final-section-02-team-02.git
 	private Timer timer;
+	private Timer movement;
+	int flag =0;
 	public ArrayList<Gem> gem = new ArrayList<Gem>();
 	public ArrayList<Enemy> enemies = new ArrayList<Enemy>();
 	public Player p = new Player();
@@ -119,6 +121,34 @@ public class GameComponent extends JPanel {
 
 
 		// TIMER TO UPDATE ENEMY POSITIONS ALONG WITH REPAINTING THE SPRITES
+		movement = new Timer(20,e ->{
+			if (flag==1) {
+				if (p.canMove(currentMap, TILESIZE, p.getX(), p.getY() - 2)) {
+					p.up();
+					checkWin();
+				}
+			}
+			if (flag==2) {
+				if (p.canMove(currentMap, TILESIZE, p.getX(), p.getY() + 2)) {
+					p.down();
+					checkWin();
+				}
+			}
+			if (flag == 3) {
+				if (p.canMove(currentMap, TILESIZE, p.getX() - 2, p.getY())) {
+					p.left();
+					checkWin();
+				}
+			}
+			if (flag == 4) {
+				if (p.canMove(currentMap, TILESIZE, p.getX() + 2, p.getY())) {
+					p.right();
+					checkWin();
+				}
+			
+			
+			
+		}});
 		timer = new Timer(20, e -> {
 			p.update(WIDTH, HEIGHT);
 			for (Enemy i : enemies) {
@@ -144,35 +174,65 @@ public class GameComponent extends JPanel {
 			repaint();
 		});
 		timer.start();
+		movement.start();
 
 		// ACTION LISTENER FOR PLAYER MOVEMENT
 		setFocusable(true);
 		addKeyListener(new KeyAdapter() {
+			public void keyReleased(KeyEvent e) {
+				if (e.getKeyCode() == KeyEvent.VK_W && flag==1) {
+					flag=0;
+				}
+				if (e.getKeyCode() == KeyEvent.VK_S&& flag==2) {
+					flag = 0;
+				}
+				if (e.getKeyCode() == KeyEvent.VK_A&& flag==3) {
+					flag=0;
+				}
+				if (e.getKeyCode() == KeyEvent.VK_D&& flag==4) {
+					flag=0;
+				}
+			}
 			@Override
 			public void keyPressed(KeyEvent e) {
 				if (e.getKeyCode() == KeyEvent.VK_W) {
+
 					if (p.canMove(currentMap, TILESIZE, p.getX(), p.getY() - 2)) {
 						p.up();
 						checkWin();
 					}
+
+					flag=1;
+
 				}
 				if (e.getKeyCode() == KeyEvent.VK_S) {
+
 					if (p.canMove(currentMap, TILESIZE, p.getX(), p.getY() + 2)) {
 						p.down();
 						checkWin();
 					}
+					flag=2;
+
 				}
 				if (e.getKeyCode() == KeyEvent.VK_A) {
+
 					if (p.canMove(currentMap, TILESIZE, p.getX() - 2, p.getY())) {
 						p.left();
 						checkWin();
 					}
+
+					flag=3;
+
 				}
 				if (e.getKeyCode() == KeyEvent.VK_D) {
+
 					if (p.canMove(currentMap, TILESIZE, p.getX() + 2, p.getY())) {
 						p.right();
 						checkWin();
 					}
+
+					flag=4;
+
 				}
 				if (e.getKeyCode() == KeyEvent.VK_DOWN) {
 					for (int i = 0; i < gem.size(); i++) {
@@ -272,7 +332,7 @@ public class GameComponent extends JPanel {
 
 					int id = enemies.size(); // 0,1,2,... as they spawn
 
-					if (currentMap == this.currentMap) { // level 1 active
+					if (currentLevel == 1) { // level 1 active
 						assignLevel1Route(z, id);
 					} else { // level 2 active
 						assignLevel2Route(z, id);
@@ -312,7 +372,13 @@ public class GameComponent extends JPanel {
 //	}
 	public void restart() {
 
+
 		//score = 0;
+
+        if(p.getHp()==0) {
+		score = 0;
+        }
+
 		p.setHp(3);
 	    enemies.clear();
 	    gem.clear();
@@ -329,17 +395,25 @@ public class GameComponent extends JPanel {
 
 
 	public void checkWin() {
-		if (gem.size() == 0 && currentLevel ==1 && currentMap[p.getY() / 30][p.getX() / 30] == 5) {
-			
-			currentLevel = 2;
-			currentMap = level2;
-			restart();
-		}
-		else if (gem.size()==0 && currentLevel==2 && currentMap[p.getY()/30][p.getX()/30]==5){
-		timer.stop();
-		app.setToWin();
-		}
+
+	    int row = p.getY() / TILESIZE;
+	    int col = p.getX() / TILESIZE;
+
+	    if (gem.size() == 0 && currentMap[row][col] == 5) {
+
+	        if (currentLevel == 1) {
+	            currentLevel = 2;
+	            currentMap = level2;
+	            restart();
+	        }
+	        else if (currentLevel == 2) {
+	            timer.stop();
+	            movement.stop();
+	            app.setToWin();
+	        }
+	    }
 	}
+
 
 	private void assignLevel1Route(Enemy z, int id) {
 		if (id % 3 == 0) {
