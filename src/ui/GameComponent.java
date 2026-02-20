@@ -33,7 +33,7 @@ public class GameComponent extends JPanel {
 	boolean firstload = true;
 	private BufferedImage wallimage;
 	private BufferedImage doorimage;
-	
+
 //<<<<<<< HEAD
 	private GameModel model;
 	private Image im;
@@ -41,7 +41,7 @@ public class GameComponent extends JPanel {
 //>>>>>>> branch 'main' of https://github.com/RHIT-brunkejp/csse220-final-section-02-team-02.git
 	private Timer timer;
 	private Timer movement;
-	int flag =0;
+	int flag = 0;
 	public ArrayList<Gem> gem = new ArrayList<Gem>();
 	public ArrayList<Enemy> enemies = new ArrayList<Enemy>();
 	public Player p = new Player();
@@ -97,33 +97,30 @@ public class GameComponent extends JPanel {
 
 //0=wall, 1=path, 2=gem, 3=player,4=enemy,5=door
 	public GameComponent() {
-		
-		
+
 		try {
-		    wallimage = ImageIO.read(getClass().getResource("/ui/wall.png"));
+			wallimage = ImageIO.read(getClass().getResource("/ui/wall.png"));
 		} catch (IOException e) {
-		    System.out.println("Could not load wall image.");
-		    e.printStackTrace();
-		}
-		
-		try {
-		    doorimage = ImageIO.read(getClass().getResource("/ui/door1.png"));
-		} catch (IOException e) {
-		    System.out.println("Could not load door image.");
-		    e.printStackTrace();
+			System.out.println("Could not load wall image.");
+			e.printStackTrace();
 		}
 
-
+		try {
+			doorimage = ImageIO.read(getClass().getResource("/ui/door1.png"));
+		} catch (IOException e) {
+			System.out.println("Could not load door image.");
+			e.printStackTrace();
+		}
 
 		// TIMER TO UPDATE ENEMY POSITIONS ALONG WITH REPAINTING THE SPRITES
-		movement = new Timer(20,e ->{
-			if (flag==1) {
+		movement = new Timer(20, e -> {
+			if (flag == 1) {
 				if (p.canMove(walls, TILESIZE, p.getX(), p.getY() - 2)) {
 					p.up();
 					checkWin();
 				}
 			}
-			if (flag==2) {
+			if (flag == 2) {
 				if (p.canMove(walls, TILESIZE, p.getX(), p.getY() + 2)) {
 					p.down();
 					checkWin();
@@ -140,10 +137,9 @@ public class GameComponent extends JPanel {
 					p.right();
 					checkWin();
 				}
-			
-			
-			
-		}});
+
+			}
+		});
 		timer = new Timer(20, e -> {
 			p.update(WIDTH, HEIGHT);
 			for (Enemy i : enemies) {
@@ -175,32 +171,33 @@ public class GameComponent extends JPanel {
 		setFocusable(true);
 		addKeyListener(new KeyAdapter() {
 			public void keyReleased(KeyEvent e) {
-				if (e.getKeyCode() == KeyEvent.VK_W && flag==1) {
-					flag=0;
-				}
-				if (e.getKeyCode() == KeyEvent.VK_S&& flag==2) {
+				if (e.getKeyCode() == KeyEvent.VK_W && flag == 1) {
 					flag = 0;
 				}
-				if (e.getKeyCode() == KeyEvent.VK_A&& flag==3) {
-					flag=0;
+				if (e.getKeyCode() == KeyEvent.VK_S && flag == 2) {
+					flag = 0;
 				}
-				if (e.getKeyCode() == KeyEvent.VK_D&& flag==4) {
-					flag=0;
+				if (e.getKeyCode() == KeyEvent.VK_A && flag == 3) {
+					flag = 0;
+				}
+				if (e.getKeyCode() == KeyEvent.VK_D && flag == 4) {
+					flag = 0;
 				}
 			}
+
 			@Override
 			public void keyPressed(KeyEvent e) {
 				if (e.getKeyCode() == KeyEvent.VK_W) {
-					flag=1;
+					flag = 1;
 				}
 				if (e.getKeyCode() == KeyEvent.VK_S) {
 					flag = 2;
 				}
 				if (e.getKeyCode() == KeyEvent.VK_A) {
-					flag=3;
+					flag = 3;
 				}
 				if (e.getKeyCode() == KeyEvent.VK_D) {
-					flag=4;
+					flag = 4;
 				}
 				if (e.getKeyCode() == KeyEvent.VK_DOWN) {
 					for (int i = 0; i < gem.size(); i++) {
@@ -253,75 +250,67 @@ public class GameComponent extends JPanel {
 		// TODO: draw based on model state
 		for (int i = 0; i < 20; i++) {
 			for (int j = 0; j < 20; j++) {
-				
-				f.x=j*TILESIZE;
-				f.y=i*TILESIZE;
-				
-				if(walls[i][j]==0) {
+
+				f.x = j * TILESIZE;
+				f.y = i * TILESIZE;
+
+				if (walls[i][j] == 0) {
 					if (wallimage != null) {
 						g2.drawImage(wallimage, f.x, f.y, TILESIZE, TILESIZE, null);
-						
+
 					}
-				}
-				else if (walls[i][j] ==1) {
+				} else if (walls[i][j] == 1) {
 					g2.setColor(path);
 //					
 					g2.fill(f);
-					
-				}
-				else if(walls[i][j] ==2 ) {
+
+				} else if (walls[i][j] == 2) {
 					g2.setColor(path);
-					
+
 					g2.fill(f);
 					if (firstload) {
 						gem.add(new Gem(j, i));
 					}
-					
-					
+
 				}
-				
+
 				else if (walls[i][j] == 3) {
 					g2.setColor(path);
-					
+
 					g2.fill(f);
 					if (firstload) {
 						p.setPosition(j * 30, i * 30);
 					}
-					
-				}	
-				
-				else if (walls[i][j] == 4 ) {
+
+				}
+
+				else if (walls[i][j] == 4) {
 					g2.setColor(path);
-					
+
 					g2.fill(f);
-					
+
 					if (firstload) {
-					Enemy z = new Enemy(j * TILESIZE, i * TILESIZE);
+						Enemy z = new Enemy(j * TILESIZE, i * TILESIZE);
 
-					int id = enemies.size(); // 0,1,2,... as they spawn
+						int id = enemies.size(); // 0,1,2,... as they spawn
 
-					if (walls == this.walls) { // level 1 active
-						assignLevel1Route(z, id);
-					} else { // level 2 active
-						assignLevel2Route(z, id);
+						if (walls == this.walls) { // level 1 active
+							assignLevel1Route(z, id);
+						} else { // level 2 active
+							assignLevel2Route(z, id);
+						}
+
+						enemies.add(z);
 					}
 
-					enemies.add(z);
-					}
-					
 				} else if (walls[i][j] == 5) {
-					
+
 					if (doorimage != null) {
 						g2.drawImage(doorimage, f.x, f.y, TILESIZE, TILESIZE, null);
-						
+
 					}
 
 				}
-				
-				
-				
-				
-				
 
 			}
 		}
@@ -329,9 +318,9 @@ public class GameComponent extends JPanel {
 	}
 
 	public void restart() {
-        if(p.getHp()==0) {
-		score = 0;
-        }
+		if (p.getHp() == 0) {
+			score = 0;
+		}
 		p.setHp(3);
 		enemies.clear();
 		gem.clear();
@@ -341,7 +330,7 @@ public class GameComponent extends JPanel {
 	}
 
 	public void checkWin() {
-		if (gem.size() == 0 && walls[(p.getY()+10)/ 30][(p.getX()+10) / 30] == 5) {
+		if (gem.size() == 0 && walls[(p.getY() + 10) / 30][(p.getX() + 10) / 30] == 5) {
 			walls = level2;
 			restart();
 		}
@@ -374,12 +363,47 @@ public class GameComponent extends JPanel {
 	}
 
 	private void assignLevel2Route(Enemy z, int id) {
-		if (id % 3 == 0) {
-			z.setPacePathTiles(TILESIZE, new int[] { 1, 4, 4, 6, 6, 3, 3, 1 }, new int[] { 1, 1, 3, 3, 5, 5, 3, 3 });
-		} else if (id % 3 == 1) {
-			z.setPacePathTiles(TILESIZE, new int[] { 2, 2, 9, 12, 12, 6, 6 }, new int[] { 17, 12, 12, 12, 15, 15, 17 });
+		if (id % 4 == 0) {
+			// Z0 spawn (10,1)
+			z.setPacePathTiles(TILESIZE,
+				new int[] { 10,11,10,10,10,10,10,11,11,10,9,8,7,6,6,6,7,8,9,10,10,10,10,10,10 },
+				new int[] {  1, 1, 1, 2, 3, 4, 5, 5, 4, 4,4,4,4,5,4,3,3,3,3,3, 4, 5, 4, 3, 2 }
+			);
+
+		} else if (id % 4 == 1) {
+			// Z1 spawn (13,5)
+			z.setPacePathTiles(TILESIZE,
+				new int[] {
+					13,14,14,14,15,16,17,18,18,18,18,18,17,16,15,14,14,14,13,12,11,10,9,9,9,10,11,12,13,
+					13,13,13,13,13,13,14,14,14,14,15,16,17,18,18,17,16,15,14,13,13,13,13,13,13,13,14,15,16,17,18,18,17,16,15,14,13,
+					13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13
+				},
+				new int[] {
+					 5, 5, 6, 7, 7, 7, 7, 7, 8, 9,10, 9, 9, 9, 9, 9, 8, 7, 7, 7, 7, 7,7,8,9,9,9,9,9,
+					 8, 7, 6, 5, 4, 3, 3, 2, 1, 2, 2, 2, 2, 2, 2, 3, 3, 3, 3, 3, 4, 5, 6, 7, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8,
+					 7, 6, 5, 4, 3, 2, 2, 2, 2, 2, 3, 3, 3, 3, 4, 4, 4, 4, 5, 5
+				}
+			);
+
+		} else if (id % 4 == 2) {
+			// Z2 spawn (18,9)
+			z.setPacePathTiles(TILESIZE,
+				new int[] { 18,18,17,17,17,17,18,18,18,18,17,17,16,15,14,13,13,13,13,13,13,13,14,15,16,17,18,17,16,15,14,13,14,15,16,17,18,18,18 },
+				new int[] {  9,10,10,11,12,13,13,14,15,14,14,15,15,15,15,15,14,13,12,11,10, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9,10,11 }
+			);
+
 		} else {
-			z.setPacePathTiles(TILESIZE, new int[] { 16, 16, 14, 14 }, new int[] { 18, 8, 8, 18 });
+			// Z3 spawn (5,16)
+			z.setPacePathTiles(TILESIZE,
+				new int[] {
+					5,6,7,8,9,9,9,10,11,11,11,10,9,8,7,6,5,4,3,2,1,1,1,2,3,4,5,6,7,8,9,
+					9,8,7,6,5,4,3,2,1,1,2,3,4,5,6,7,8,9,9,9,8,7,6,5
+				},
+				new int[] {
+					16,16,16,16,16,17,18,18,18,17,16,16,16,16,16,16,16,16,16,16,16,17,18,18,18,18,18,18,18,18,18,
+					17,17,17,17,17,17,17,17,17,18,18,18,18,18,18,18,18,18,17,16,16,16,16,16
+				}
+			);
 		}
 	}
 }
