@@ -27,6 +27,7 @@ public class MainApp {
 		cards.add(game, "GAME");
 		cards.add(gameOver, "GAME OVER");
 		cards.add(winScreen, "WIN");
+		//adds all the cards to the layout
 
 		frame.setContentPane(cards);
 		CardLayout cl = (CardLayout) cards.getLayout();
@@ -35,8 +36,10 @@ public class MainApp {
 			cl.show(cards, "GAME");
 			game.requestFocusInWindow();
 		});
+		//set the layout to the game and add a listener to the restart button
 		frame.setSize(614, 630);
 		frame.setLocationRelativeTo(null); // center on screen (nice UX, still minimal)
+		//sets a timer to constantly check if the player died or won
 		Timer timer = new Timer(50, e -> {
 			if (game.p.getHp() == 0) {
 				this.setToOver();
@@ -50,21 +53,25 @@ public class MainApp {
 
 	public static void main(String[] args) {
 		SwingUtilities.invokeLater(() -> new MainApp().run());
+		//runs the app when ready
 	}
 
 	public void run() {
+		//shows the app
 		frame.setLocationRelativeTo(null);
 		frame.setVisible(true);
 
 	}
 
 	public void setToOver() {
+		//sets the game to the game over card in the card layout
 		CardLayout cl = (CardLayout) cards.getLayout();
 		gameOver.scoredisplay(game.score);
 		cl.show(cards, "GAME OVER");
 	}
 	
 	public void setToWin() {
+		//sets the card layout to the win card
 	    CardLayout cl = (CardLayout) cards.getLayout();
 	    winScreen.scoredisplay(game.score);
 	    cl.show(cards, "WIN");

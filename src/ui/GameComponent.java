@@ -96,6 +96,9 @@ public class GameComponent extends JPanel {
 
 //0=wall, 1=path, 2=gem, 3=player,4=enemy,5=door
 	public GameComponent() {
+		/*
+		 * Our try/catches to get the sprites for all of our items and entities in game
+		 */
 
 		try {
 			wallimage = ImageIO.read(getClass().getResource("/ui/wall.png"));
@@ -117,7 +120,8 @@ public class GameComponent extends JPanel {
 			e.printStackTrace();
 		}
 
-		// TIMER TO UPDATE ENEMY POSITIONS ALONG WITH REPAINTING THE SPRITES
+		
+		//timer used to determine the movement of the player where flag indicates the direction that the player should go
 		movement = new Timer(20, e -> {
 			if (flag == 1) {
 				if (p.canMove(walls, TILESIZE, p.getX(), p.getY() - 2)) {
@@ -145,10 +149,11 @@ public class GameComponent extends JPanel {
 
 			}
 		});
+		// TIMER TO UPDATE ENEMY POSITIONS ALONG WITH REPAINTING THE SPRITES
 		timer = new Timer(20, e -> {
 			p.update(WIDTH, HEIGHT);
 			for (Enemy i : enemies) {
-				i.updateEnemy(walls, TILESIZE);
+				i.update(walls, TILESIZE);
 			}
 
 			// cooldown countdown
@@ -172,7 +177,8 @@ public class GameComponent extends JPanel {
 		timer.start();
 		movement.start();
 
-		// ACTION LISTENER FOR PLAYER MOVEMENT
+		
+		//action listener: changes the flag variable to the inputted direction, or sets it to 0 if the key that was previously presses was released
 		setFocusable(true);
 		addKeyListener(new KeyAdapter() {
 			public void keyReleased(KeyEvent e) {
@@ -189,7 +195,7 @@ public class GameComponent extends JPanel {
 					flag = 0;
 				}
 			}
-
+			// ACTION LISTENER FOR PLAYER MOVEMENT
 			@Override
 			public void keyPressed(KeyEvent e) {
 				if (e.getKeyCode() == KeyEvent.VK_W) {
@@ -229,9 +235,11 @@ public class GameComponent extends JPanel {
 		// Minimal placeholder to test it’s running
 		loadLevel(walls, g2);
 		firstload = false;
+		//paint all gems
 		for (Gem z : gem) {
 			z.draw(g2);
 		}
+		//paint all zombies
 		for (Enemy z : enemies) {
 			z.draw(g2);
 		}
@@ -248,7 +256,11 @@ public class GameComponent extends JPanel {
 		// game over
 
 	}
-
+/**
+ * This method handles the drawing of the map and its components.
+ * @param walls the array for the current map
+ * @param g2 the graphics component to draw with
+ */
 	private void loadLevel(int[][] walls, Graphics2D g2) {
 		Rectangle f = new Rectangle(30, 30);
 		Color path = new Color(130, 245, 134);
@@ -337,7 +349,9 @@ public class GameComponent extends JPanel {
 		}
 
 	}
-
+    /**
+     * this method restarts the game for the user to play again after a loss
+     */
 	public void restart() {
 		if (p.getHp() == 0) {
 			score = 0;
@@ -349,14 +363,20 @@ public class GameComponent extends JPanel {
 		repaint();
 
 	}
-
+/**
+ * checks if the user has met all conditions to win/move onto the next level
+ */
 	public void checkWin() {
 		if (gem.size() == 0 && walls[(p.getY() + 10) / 30][(p.getX() + 10) / 30] == 5&& level2!=walls) {
 			walls = level2;
 			restart();
 		}
 	}
-
+/**
+ * this method assigns each zombie with it's own custom patrol path within the maze
+ * @param z the enemy
+ * @param id the id assigned to the enemy
+ */
 	private void assignLevel1Route(Enemy z, int id) {
 		if (id % 3 == 0) {
 			// Z0 start (6,7) -> end (11,5) is a WALL, so choose ONE of these:
@@ -382,7 +402,11 @@ public class GameComponent extends JPanel {
 					new int[] { 18, 18, 18, 18, 18, 17, 16, 15, 14, 13, 12, 11, 10, 9, 8, 8, 8, 8, 8, 8, 9 });
 		}
 	}
-
+/**
+ * this method assigns the custom patrol paths of the zombies for the second level.
+ * @param z the enemy
+ * @param id the id tied to the enemy
+ */
 	private void assignLevel2Route(Enemy z, int id) {
 		if (id % 4 == 0) {
 			// Z0 spawn (10,1)
@@ -412,12 +436,6 @@ public class GameComponent extends JPanel {
 
 		} else {
 			// Z3 spawn (5,16)
-			z.setPacePathTiles(TILESIZE,
-					new int[] { 5, 6, 7, 8, 9, 9, 9, 10, 11, 11, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 1, 1, 2, 3, 4, 5, 6,
-							7, 8, 9, 9, 8, 7, 6, 5, 4, 3, 2, 1, 1, 2, 3, 4, 5, 6, 7, 8, 9, 9, 9, 8, 7, 6, 5 },
-					new int[] { 16, 16, 16, 16, 16, 17, 18, 18, 18, 17, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 17,
-							18, 18, 18, 18, 18, 18, 18, 18, 18, 17, 17, 17, 17, 17, 17, 17, 17, 17, 18, 18, 18, 18, 18,
-							18, 18, 18, 18, 17, 16, 16, 16, 16, 16 });
 		}
 	}
 

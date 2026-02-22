@@ -11,7 +11,7 @@ import java.util.Timer;
 import java.awt.Rectangle;
 import javax.imageio.ImageIO;
 
-public class Player {
+public class Player implements HumanoidEntity {
 	int x;
 	int y;
 	int hp;
@@ -28,8 +28,12 @@ public class Player {
 		speed = 2;
 		loadSpriteOnce();
 	}
-
-	public void update(int worldWidth, int worldHeight) {
+	/**
+	 * checks to make sure that the player is not escaping the frame of play
+	 * @param worldWidth the width of the world
+	 * @param worldHeight the height of the world
+	 */
+ public void update(int worldWidth, int worldHeight) {
 		if (x < 0) {
 			x = 0;
 		} else if (x + playerWidth > worldWidth) {
@@ -43,6 +47,7 @@ public class Player {
 	}
 
 	private static void loadSpriteOnce() {
+		//tries to load sprite
 		if (triedLoad)
 			return;
 		triedLoad = true;
@@ -92,8 +97,14 @@ public class Player {
 		return y;
 	}
 
-	// CHECKS IF THE PLAYER IS ABLE TO MOVE TO A SPECIFIC DIRECTION (WALL
-	// COLLISIONS)
+/**
+ * this method checks if the player is able to move in the inputed direction
+ * @param walls the current map layout
+ * @param tileSize the size of the tiles
+ * @param x2 the projected position x
+ * @param y2 the projected position y
+ * @return a true if he can move, false if not
+ */
 	public boolean canMove(int[][] walls, int tileSize, int x2, int y2) {
 		int leftTile = x2 / tileSize;
 		int rightTile = (x2 + tileSize - 1) / tileSize;
@@ -105,21 +116,24 @@ public class Player {
 		}
 		return true;
 	}
-
+    //returns hp
 	public int getHp() {
 		return hp;
 	}
-
+    //decreases the life by 1
 	public void loseLife() {
 		if (hp > 0)
 			hp--;
 	}
+	//checks if the player has no hp
 	public boolean noHp() {
 		return hp == 0;
 	}
+	//sets the player's hp to the parameter's number
 	public void setHp(int hp) {
 		this.hp = hp;
 	}
+	//sets the player's position to the parameters x and y
 	public void setPosition(int x, int y) {
 		this.x = x;
 		this.y = y;

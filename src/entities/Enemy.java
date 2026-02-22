@@ -10,12 +10,12 @@ import java.util.ArrayList;
 import javax.imageio.ImageIO;
 
 /** Enemy that moves automatically and cannot pass through walls. */
-public class Enemy {
+public class Enemy implements HumanoidEntity{
 	private static BufferedImage sprite = null;
 	private static boolean triedLoad = false;
 	private int x;
 	private int y;
-	private int hp;
+
 	private int speed = 2;
 	private ArrayList<Point> path = new ArrayList<>(); // pixel waypoints
 	private int pathIndex = 0;
@@ -24,14 +24,13 @@ public class Enemy {
 	// match your draw size so collision is accurate
 	private int enemyWidth = 20;
 	private int enemyHeight = 28;
-
+//constructor that sets the enemies position
 	public Enemy(int sx, int sy) {
 		x = sx;
 		y = sy;
-		hp = 3;
 		loadSpriteOnce();
 	}
-
+//tries to load the sprite once
 	private static void loadSpriteOnce() {
 		if (triedLoad)
 			return;
@@ -68,7 +67,7 @@ public class Enemy {
 		return true;
 	}
 
-	public void updateEnemy(int[][] walls, int tileSize) {
+	public void update(int[][] walls, int tileSize) {
 		if (path.isEmpty())
 			return;
 		Point target = path.get(pathIndex);
@@ -134,6 +133,7 @@ public class Enemy {
 	}
 
 	public void draw(Graphics2D g2) {
+		//tries to draw sprite
 		if (sprite != null) {
 			g2.drawImage(sprite, x, y, enemyWidth, enemyHeight, null);
 		} else {
@@ -149,6 +149,7 @@ public class Enemy {
 	public void setPacePathTiles(int tileSize, int[] cols, int[] rows) {
 		path.clear();
 		// Keep your +1 alignment
+		//set the path tiles and the pace for the enemies
 		int xOff = (tileSize - enemyWidth) / 2 + 1;
 		int yOff = (tileSize - enemyHeight) / 2 + 1;
 		for (int i = 0; i < cols.length && i < rows.length; i++) {
